@@ -12,12 +12,13 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  async create(createProductDto: CreateProductDto) {
+    const product = await this.productRepository.create(createProductDto);
+    return await this.productRepository.save(product);
   }
 
-  findAll() {
-    return `This action returns all products`;
+  async findAll() {
+    return await this.productRepository.find();
   }
 
   async findOne(id: number) {
@@ -33,7 +34,9 @@ export class ProductsService {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const product = await this.productRepository.findOne({ where: { id: +id } });
+    const product = await this.productRepository.findOne({
+      where: { id: +id },
+    });
 
     if (!product) {
       throw new NotFoundException('Product not found');
