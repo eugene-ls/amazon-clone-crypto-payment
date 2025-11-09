@@ -12,19 +12,33 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
   ) {}
-
   async create(createProductDto: CreateProductDto) {
-    const product = await this.productRepository.create(createProductDto);
+    const product = this.productRepository.create(createProductDto);
     return await this.productRepository.save(product);
   }
-
   async findAll(paginationDto: PaginationDto) {
-    const { page = 1, limit = 10 } = paginationDto;
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'id',
+      order = 'ASC',
+      categoryId,
+    } = paginationDto;
+
     const skip = (page - 1) * limit;
-    const [items, total] = await this.productRepository.findAndCount({
-      skip,
-      take: limit,
-    });
+
+    const query = this.productRepository
+      .createQueryBuilder('product')
+      .skip(skip)
+      .take(limit)
+      .orderBy(`product.${sortBy}`, order.toUpperCase() as 'ASC' | 'DESC');
+
+    if (categoryId) {
+      query.andWhere('product.categoryId = :categoryId', { categoryId });
+    }
+
+    const [items, total] = await query.getManyAndCount();
+
     return {
       items,
       total,
@@ -32,7 +46,6 @@ export class ProductsService {
       limit,
     };
   }
-
   async findOne(id: number) {
     const product = await this.productRepository.findOne({
       where: { id: +id },
@@ -44,7 +57,6 @@ export class ProductsService {
 
     return product;
   }
-
   async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await this.productRepository.findOne({
       where: { id: +id },
@@ -54,36 +66,18 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    if (updateProductDto.name !== undefined) {
-      product.name = updateProductDto.name;
-    }
-
-    if (updateProductDto.price !== undefined) {
-      product.price = updateProductDto.price;
-    }
-
-    if (updateProductDto.description !== undefined) {
-      product.description = updateProductDto.description;
-    }
-
-    if (updateProductDto.image !== undefined) {
-      product.image = updateProductDto.image;
-    }
-
-    if (updateProductDto.categoryId !== undefined) {
-      product.categoryId = updateProductDto.categoryId;
-    }
+    Object.assign(product, updateProductDto);
 
     return await this.productRepository.save(product);
   }
-
   async remove(id: number) {
     const product = await this.productRepository.findOneBy({ id: +id });
+
     if (!product) {
       throw new NotFoundException(`Product not found`);
     }
-    await this.productRepository.delete(product);
 
+    await this.productRepository.delete({ id: +id });
     return true;
   }
 }
