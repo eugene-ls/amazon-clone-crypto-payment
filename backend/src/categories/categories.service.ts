@@ -1,10 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './category.entity'
 
 @Injectable()
 export class CategoriesService {
+  async findOne(id: string) {
+    {
+      const category = await this.categoryRepository.findOneBy({ id: +id });
+
+      if (!category) {
+        throw new NotFoundException('Category not found');
+      }
+
+      return category;
+    }
+  }
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
@@ -18,3 +29,4 @@ export class CategoriesService {
     return this.categoryRepository.save(newCategory);
   }
 }
+
