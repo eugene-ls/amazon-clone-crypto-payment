@@ -22,7 +22,10 @@ export class WishlistService {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
 
-    const product = await this.productRepository.findOne({ where: { id: productId } });
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+
     if (!product) throw new NotFoundException('Product not found');
 
     const wishlist = this.wishlistRepository.create({ user, product });
@@ -30,7 +33,10 @@ export class WishlistService {
   }
 
   async remove(userId: number, productId: number) {
-    await this.wishlistRepository.delete({ user: { id: userId }, product: { id: productId } });
+    await this.wishlistRepository.delete({
+      user: { id: userId },
+      product: { id: productId },
+    });
     return true;
   }
 

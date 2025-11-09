@@ -30,6 +30,7 @@ import { DatabaseConfig } from './database/config/database-config.type';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { CartModule } from './cart/cart.module';
 
 // <database-block>
 const infrastructureDatabaseModule = (databaseConfig() as DatabaseConfig)
@@ -98,6 +99,7 @@ const infrastructureDatabaseModule = (databaseConfig() as DatabaseConfig)
     CategoriesModule,
     ProductsModule,
     WishlistModule,
+    CartModule,
   ],
 })
 export class AppModule {}
