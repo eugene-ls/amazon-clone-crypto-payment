@@ -1,7 +1,16 @@
-import { Body, Controller, Get, Param, Post, Patch, Delete, } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Product } from '../products/entities/product.entity';
 
 @Controller({ path: 'categories' })
 export class CategoriesController {
@@ -20,6 +29,10 @@ export class CategoriesController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.categoriesService.findOne(id);
+  }
+  @Get(':id/products')
+  findProducts(@Param('id') id: string): Promise<Product[]> {
+    return this.categoriesService.findProduct(id);
   }
 
   @Patch(':id')
