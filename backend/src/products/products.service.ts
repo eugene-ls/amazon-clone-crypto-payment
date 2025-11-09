@@ -23,21 +23,32 @@ export class ProductsService {
       sortBy = 'id',
       order = 'ASC',
       categoryId,
+      search,
+      minPrice,
+      maxPrice,
     } = paginationDto;
 
     const skip = (page - 1) * limit;
 
-    const query = this.productRepository
-      .createQueryBuilder('product')
-      .skip(skip)
-      .take(limit)
-      .orderBy(`product.${sortBy}`, order.toUpperCase() as 'ASC' | 'DESC');
+    const qb = this.productRepository.createQueryBuilder('product');
 
-    if (categoryId) {
-      query.andWhere('product.categoryId = :categoryId', { categoryId });
+    if (search) {
+      qb.andWhere('product.name ILIKE :q', { q: `%${search}%` });
     }
+    if (minPrice) {
+      qb.andWhere('product.price >= :minPrice', { minPrice });
+    }
+    if (maxPrice) {
+      qb.andWhere('product.price <= :maxPrice', { maxPrice });
+    }
+    if (categoryId) {
+      qb.andWhere('product.categoryId = :categoryId', { categoryId });
+    }
+    qb.orderBy(`product.${sortBy}`, order === 'DESC' ? 'DESC' : 'ASC');
 
-    const [items, total] = await query.getManyAndCount();
+    qb.offset(skip).limit(limit);
+
+    const [items, total] = await qb.getManyAndCount();
 
     return {
       items,
@@ -46,9 +57,10 @@ export class ProductsService {
       limit,
     };
   }
+
   async findOne(id: number) {
     const product = await this.productRepository.findOne({
-      where: { id: +id },
+      where: { id },
     });
 
     if (!product) {
@@ -57,9 +69,10 @@ export class ProductsService {
 
     return product;
   }
+
   async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await this.productRepository.findOne({
-      where: { id: +id },
+      where: { id },
     });
 
     if (!product) {
@@ -70,14 +83,15 @@ export class ProductsService {
 
     return await this.productRepository.save(product);
   }
+
   async remove(id: number) {
-    const product = await this.productRepository.findOneBy({ id: +id });
+    const product = await this.productRepository.findOne({ where: { id } });
 
     if (!product) {
       throw new NotFoundException(`Product not found`);
     }
 
-    await this.productRepository.delete({ id: +id });
+    await this.productRepository.delete({ id });
     return true;
   }
 }
