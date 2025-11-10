@@ -31,6 +31,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { CartModule } from './cart/cart.module';
+import { OrdersModule } from './orders/orders.module';
 
 // <database-block>
 const infrastructureDatabaseModule = (databaseConfig() as DatabaseConfig)
@@ -100,6 +101,7 @@ const infrastructureDatabaseModule = (databaseConfig() as DatabaseConfig)
     ProductsModule,
     WishlistModule,
     CartModule,
+    OrdersModule,
   ],
 })
 export class AppModule {}
