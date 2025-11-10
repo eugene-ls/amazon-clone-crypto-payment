@@ -16,7 +16,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ApiBearerAuth,
-  ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
@@ -47,8 +46,8 @@ import { infinityPagination } from '../utils/infinity-pagination';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiCreatedResponse({
-    type: User,
+  @ApiOkResponse({
+    type: InfinityPaginationResponse(User),
   })
   @SerializeOptions({
     groups: ['admin'],
