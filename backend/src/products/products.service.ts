@@ -12,86 +12,47 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
   ) {}
-  async create(createProductDto: CreateProductDto) {
-    const product = this.productRepository.create(createProductDto);
+
+  async create(dto: CreateProductDto) {
+    const product = this.productRepository.create(dto);
     return await this.productRepository.save(product);
   }
+
   async findAll(paginationDto: PaginationDto) {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'id',
-      order = 'ASC',
-      categoryId,
-      search,
-      minPrice,
-      maxPrice,
-    } = paginationDto;
-
-    const skip = (page - 1) * limit;
-
-    const qb = this.productRepository.createQueryBuilder('product');
-
-    if (search) {
-      qb.andWhere('product.name ILIKE :q', { q: `%${search}%` });
-    }
-    if (minPrice) {
-      qb.andWhere('product.price >= :minPrice', { minPrice });
-    }
-    if (maxPrice) {
-      qb.andWhere('product.price <= :maxPrice', { maxPrice });
-    }
-    if (categoryId) {
-      qb.andWhere('product.categoryId = :categoryId', { categoryId });
-    }
-    qb.orderBy(`product.${sortBy}`, order === 'DESC' ? 'DESC' : 'ASC');
-
-    qb.offset(skip).limit(limit);
-
-    const [items, total] = await qb.getManyAndCount();
-
-    return {
-      items,
-      total,
-      page,
-      limit,
-    };
+    return this.productRepository.find();
   }
 
   async findOne(id: number) {
-    const product = await this.productRepository.findOne({
-      where: { id },
-    });
+    const product = await this.productRepository.findOne({ where: { id } });
 
-    if (!product) {
-      throw new NotFoundException(`Product not found`);
-    }
+    if (!product) throw new NotFoundException('Product not found');
 
     return product;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
-    const product = await this.productRepository.findOne({
-      where: { id },
-    });
+  async update(id: number, dto: UpdateProductDto) {
+    const product = await this.findOne(id);
 
-    if (!product) {
-      throw new NotFoundException('Product not found');
-    }
+    Object.assign(product, dto);
 
-    Object.assign(product, updateProductDto);
-
-    return await this.productRepository.save(product);
+    return this.productRepository.save(product);
   }
 
   async remove(id: number) {
-    const product = await this.productRepository.findOne({ where: { id } });
-
-    if (!product) {
-      throw new NotFoundException(`Product not found`);
-    }
-
+    await this.findOne(id);
     await this.productRepository.delete({ id });
     return true;
+  }
+
+  async addImages(id: number, files: Express.Multer.File[]) {
+    const product = await this.findOne(id);
+
+    const newImages = files.map((file) => `/uploads/${file.filename}`);
+
+    if (!product.images) product.images = [];
+
+    product.images = [...product.images, ...newImages];
+
+    return this.productRepository.save(product);
   }
 }
