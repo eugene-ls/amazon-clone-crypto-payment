@@ -69,4 +69,8 @@ export class ProductsController {
   remove(@Param('id') id: string) {
     return this.productsService.remove(+id);
   }
+  @Delete(':id/images/:imageName')
+  removeImage(@Param('id') id: string, @Param('imageName') imageName: string) {
+    return this.productsService.removeImage(+id, imageName);
+  }
 }
