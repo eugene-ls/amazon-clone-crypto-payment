@@ -15,7 +15,7 @@ export class Product {
   @Column()
   description: string;
 
-  @Column()
+  @Column({ nullable: true })
   image: string;
 
   @Column()

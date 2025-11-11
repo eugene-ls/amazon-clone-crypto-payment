@@ -1,13 +1,7 @@
-import {
-  Controller,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FilesService } from './files.service';
-
-import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('Files')
 @Controller('files')
@@ -21,14 +15,12 @@ export class FilesController {
     schema: {
       type: 'object',
       properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
+        file: { type: 'string', format: 'binary' },
       },
+      required: ['file'],
     },
   })
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
     return this.filesService.saveFile(file);
   }
 }
