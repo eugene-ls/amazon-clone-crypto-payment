@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-
-import { FileRepository } from './infrastructure/persistence/file.repository';
-import { FileType } from './domain/file';
-import { NullableType } from '../utils/types/nullable.type';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class FilesService {
-  constructor(private readonly fileRepository: FileRepository) {}
+  async saveFile(file: Express.Multer.File) {
+    const uploadPath = join(process.cwd(), 'uploads', file.originalname);
 
-  findById(id: FileType['id']): Promise<NullableType<FileType>> {
-    return this.fileRepository.findById(id);
-  }
+    writeFileSync(uploadPath, file.buffer);
 
-  findByIds(ids: FileType['id'][]): Promise<FileType[]> {
-    return this.fileRepository.findByIds(ids);
+    return {
+      originalName: file.originalname,
+      fileName: file.originalname,
+      path: `/uploads/${file.originalname}`,
+    };
   }
 }
