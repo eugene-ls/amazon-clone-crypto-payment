@@ -1,18 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
+  // если используешь Tailwind / SWC — оставляем
   swcMinify: true,
+
+  // Доступные домены для <Image />
   images: {
-    domains: ["lh3.googleusercontent.com", "vercel.com"],
+    domains: ["localhost", "127.0.0.1"],
   },
-  async redirects() {
-    return [
-      {
-        source: "/github",
-        destination: "https://github.com/steven-tey/precedent",
-        permanent: false,
-      },
-    ];
+
+  // Если нужен strict режим маршрутов
+  experimental: {
+    typedRoutes: true,
   },
 };
 
