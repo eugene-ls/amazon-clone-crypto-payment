@@ -1,23 +1,25 @@
 import api from "../api";
 
 export const authService = {
-  async register(data: { email: string; password: string }) {
-    const res = await api.post("/auth/email/register", data);
+  async login(data: { email: string; password: string }) {
+    const res = await api.post("/v1/auth/email/login", data);
     return res.data;
   },
 
-  async login(data: { email: string; password: string }) {
-    const res = await api.post("/auth/email/login", data);
+  async register(data: { email: string; password: string }) {
+    const res = await api.post("/v1/auth/email/register", data);
     return res.data;
   },
 
   async me() {
-    const res = await api.get("/auth/me");
+    const res = await api.get("/v1/auth/me");
     return res.data;
   },
-};
 
-export const isAuthenticated = (): boolean => {
-  if (typeof window === "undefined") return false;
-  return !!localStorage.getItem("accessToken");
+  isAuthenticated() {
+    return typeof window !== "undefined" &&
+    localStorage.getItem("accessToken")
+      ? true
+      : false;
+  },
 };
