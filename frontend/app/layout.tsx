@@ -1,19 +1,17 @@
 import "./globals.css";
+import Navbar from "@/components/layout/Navbar";
 
 export const metadata = {
-  title: "E-commerce",
-  description: "Fullstack e-commerce project",
+  title: "Mazon",
+  description: "E-commerce project",
 };
 
-export default function RootLayout({
-                                     children,
-                                   }: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-    <body>
-    {children}
+    <body className="bg-white">
+    <Navbar />
+    <main>{children}</main>
     </body>
     </html>
   );
