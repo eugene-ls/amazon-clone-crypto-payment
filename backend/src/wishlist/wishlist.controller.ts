@@ -1,4 +1,4 @@
-import { Controller, Post, Delete, Get, Param, Req } from '@nestjs/common';
+ import { Controller, Post, Delete, Get, Param, Req } from '@nestjs/common';
 import { WishlistService } from './wishlist.service';
 
 @Controller('wishlist')
