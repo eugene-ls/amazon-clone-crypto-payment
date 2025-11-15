@@ -2,42 +2,43 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { authService } from "@/lib/services/auth";
 
 export default function Navbar() {
   const [auth, setAuth] = useState(false);
 
   useEffect(() => {
-    setAuth(authService.isAuthenticated());
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("accessToken");
+      setAuth(!!token);
+    }
   }, []);
 
   return (
-    <nav className="w-full h-16 px-6 flex items-center justify-between shadow bg-white">
-      <div className="flex items-center gap-2">
-        <div className="w-4 h-4 bg-blue-600 rounded-sm"></div>
-        <Link href="/" className="text-xl font-bold">Mazon</Link>
+    <nav className="w-full h-16 flex items-center justify-between px-6 bg-white shadow">
+      {/* LEFT */}
+      <div className="flex items-center gap-8">
+        <Link href="/" className="text-2xl font-bold text-blue-700">
+          Mazon
+        </Link>
 
-        <div className="ml-10 flex gap-6 text-gray-700">
-          <Link href="/">Products</Link>
-          <Link href="/">Categories</Link>
-          <Link href="/">Pricing</Link>
+        <div className="flex gap-6 text-gray-700">
+          <Link href="/products">Products</Link>
+          <Link href="/cart">Cart</Link>
+          {auth && <Link href="/profile">Profile</Link>}
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Link href="/" className="text-gray-600">Contact</Link>
-
+      {/* RIGHT */}
+      <div className="flex items-center gap-4 text-gray-700">
         {!auth ? (
-          <>
-            <Link href="/login" className="text-gray-800">Login</Link>
-            <Link href="/register" className="text-gray-800">Sign up</Link>
-            <Link
-              href="/register"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Get started
+          <div className="flex gap-4">
+            <Link href="/login" className="text-gray-800">
+              Login
             </Link>
-          </>
+            <Link href="/register" className="text-gray-800">
+              Sign Up
+            </Link>
+          </div>
         ) : (
           <button
             onClick={() => {

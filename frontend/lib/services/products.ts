@@ -1,9 +1,16 @@
-import api from "../api";
+import api from "@/lib/api";
 
 export const productsService = {
   async getAll() {
     const res = await api.get("/products");
-    return res.data;
+
+    // ПОДСТРАХОВКА под разные форматы ответа бэка
+    if (Array.isArray(res.data)) return res.data;
+    if (Array.isArray(res.data.items)) return res.data.items;
+    if (Array.isArray(res.data.data)) return res.data.data;
+
+    console.warn("Unexpected products response:", res.data);
+    return [];
   },
 
   async getOne(id: number) {
@@ -26,9 +33,7 @@ export const productsService = {
     files.forEach((file) => formData.append("files", file));
 
     const res = await api.post(`/products/${productId}/images`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
     return res.data;
