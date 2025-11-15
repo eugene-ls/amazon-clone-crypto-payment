@@ -38,4 +38,8 @@ export const productsService = {
 
     return res.data;
   },
+  async update(id: number, data: any) {
+    const res = await api.patch(`/products/${id}`, data);
+    return res.data;
+  }
 };

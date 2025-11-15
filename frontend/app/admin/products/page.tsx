@@ -1,4 +1,3 @@
-// frontend/app/admin/products/page.tsx
 import Link from "next/link";
 import { productsService } from "@/lib/services/products";
 
@@ -7,48 +6,52 @@ export default async function AdminProductsPage() {
 
   return (
     <div className="p-10">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Admin – Products</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Products</h1>
+
         <Link
           href="/admin/products/new"
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="bg-green-600 text-white px-4 py-2 rounded"
         >
-          Create product
+          + Create Product
         </Link>
       </div>
 
-      {!products || products.length === 0 ? (
-        <p>No products yet.</p>
-      ) : (
-        <table className="w-full border-collapse text-sm">
-          <thead>
-          <tr className="border-b">
-            <th className="text-left p-2">ID</th>
-            <th className="text-left p-2">Name</th>
-            <th className="text-left p-2">Price</th>
-            <th className="text-left p-2">Actions</th>
+      <table className="w-full border-collapse text-sm">
+        <thead>
+        <tr className="border-b">
+          <th className="p-2 text-left">ID</th>
+          <th className="p-2 text-left">Name</th>
+          <th className="p-2 text-left">Price</th>
+          <th className="p-2 text-left">Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {products.map((p: any) => (
+          <tr key={p.id} className="border-b">
+            <td className="p-2">{p.id}</td>
+            <td className="p-2">{p.name}</td>
+            <td className="p-2">${p.price}</td>
+            <td className="p-2 flex gap-6">
+              <Link
+                href={`/admin/products/${p.id}`}
+                className="text-blue-600 underline"
+              >
+                Edit
+              </Link>
+
+              <form
+                action={`/api/delete-product?id=${p.id}`}
+                method="POST"
+              >
+                <button className="text-red-600">Delete</button>
+              </form>
+            </td>
           </tr>
-          </thead>
-          <tbody>
-          {products.map((p: any) => (
-            <tr key={p.id} className="border-b">
-              <td className="p-2">{p.id}</td>
-              <td className="p-2">{p.name}</td>
-              <td className="p-2">{p.price ?? "—"}</td>
-              <td className="p-2">
-                <Link
-                  href={`/products/${p.id}`}
-                  className="text-blue-600 hover:underline mr-3"
-                >
-                  View
-                </Link>
-                {/* потом сделаем edit */}
-              </td>
-            </tr>
-          ))}
-          </tbody>
-        </table>
-      )}
+        ))}
+        </tbody>
+      </table>
     </div>
   );
 }
