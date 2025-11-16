@@ -17,7 +17,10 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginationDto } from './dto/pagination.dto';
 import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 
-@Controller('products')
+@Controller({
+  path: 'products',
+  version: '1',
+})
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 

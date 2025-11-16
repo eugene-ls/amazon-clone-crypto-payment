@@ -9,7 +9,12 @@ export default function RegisterPage() {
 
   const submit = async () => {
     await authService.register({ email, password });
-    window.location.href = "/login";
+
+    // авто-логин сразу после регистрации
+    const loginRes = await authService.login({ email, password });
+
+    localStorage.setItem("accessToken", loginRes.accessToken);
+    window.location.href = "/admin/products";
   };
 
   return (
@@ -31,7 +36,7 @@ export default function RegisterPage() {
 
       <button
         onClick={submit}
-        className="w-full bg-gray-900 text-white p-2 rounded"
+        className="w-full bg-blue-600 text-white p-2 rounded"
       >
         Register
       </button>

@@ -9,8 +9,10 @@ export default function LoginPage() {
 
   const submit = async () => {
     const res = await authService.login({ email, password });
-    localStorage.setItem("accessToken", res.accessToken);
-    window.location.href = "/";
+
+    document.cookie = `accessToken=${res.accessToken}; path=/; max-age=604800`;
+
+    window.location.href = "/admin/products";
   };
 
   return (

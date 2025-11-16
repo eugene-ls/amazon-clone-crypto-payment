@@ -6,13 +6,9 @@ export default async function AdminProductsPage() {
 
   return (
     <div className="p-10">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between mb-6">
         <h1 className="text-3xl font-bold">Products</h1>
-
-        <Link
-          href="/admin/products/new"
-          className="bg-green-600 text-white px-4 py-2 rounded"
-        >
+        <Link href="/admin/products/new" className="bg-green-600 text-white px-4 py-2 rounded">
           + Create Product
         </Link>
       </div>
@@ -33,20 +29,19 @@ export default async function AdminProductsPage() {
             <td className="p-2">{p.id}</td>
             <td className="p-2">{p.name}</td>
             <td className="p-2">${p.price}</td>
-            <td className="p-2 flex gap-6">
-              <Link
-                href={`/admin/products/${p.id}`}
-                className="text-blue-600 underline"
-              >
+            <td className="p-2 flex gap-4">
+              <Link href={`/admin/products/${p.id}`} className="text-blue-600 underline">
                 Edit
               </Link>
-
-              <form
-                action={`/api/delete-product?id=${p.id}`}
-                method="POST"
+              <button
+                className="text-red-600"
+                onClick={async () => {
+                  await productsService.delete(p.id);
+                  location.reload();
+                }}
               >
-                <button className="text-red-600">Delete</button>
-              </form>
+                Delete
+              </button>
             </td>
           </tr>
         ))}

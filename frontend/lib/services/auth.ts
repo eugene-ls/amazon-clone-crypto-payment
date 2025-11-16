@@ -2,17 +2,17 @@ import api from "../api";
 
 export const authService = {
   async login(data: { email: string; password: string }) {
-    const res = await api.post("/auth/login", data);
+    const res = await api.post("/api/v1/auth/email/login", data);
     return res.data;
   },
 
   async register(data: { email: string; password: string }) {
-    const res = await api.post("/auth/register", data);
+    const res = await api.post("/api/v1/auth/email/register", data);
     return res.data;
   },
 
   async me() {
-    const res = await api.get("/auth/me");
+    const res = await api.get("/api/v1/auth/me");
     return res.data;
   },
 
