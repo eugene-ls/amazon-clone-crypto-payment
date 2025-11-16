@@ -2,60 +2,60 @@
 
 import axios from "axios";
 import { useState } from "react";
-import { authService } from "@/lib/services/auth";
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const data = {
-      email,
-      password,
-      firstName,
-      lastName,
-    };
+    try {
+      const res = await axios.post(
+        "http://localhost:3001/api/v1/auth/email/register",
+        {
+          firstName,
+          lastName,
+          email,
+          password,
+        }
+      );
 
-    const res = await axios.post(
-      "http://localhost:3001/api/v1/auth/email/register",
-      data
-    );
-
-    alert("Registered!");
+      alert("Registration successful!");
+      console.log(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Registration failed");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ padding: 20 }}>
       <input
-        type="text"
-        placeholder="First name"
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
+        placeholder="First Name"
       />
 
       <input
-        type="text"
-        placeholder="Last name"
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
+        placeholder="Last Name"
       />
 
       <input
-        type="email"
-        placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
       />
 
       <input
         type="password"
-        placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
       />
 
       <button type="submit">Register</button>
