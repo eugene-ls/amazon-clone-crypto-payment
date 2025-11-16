@@ -1,25 +1,27 @@
-import api from "../api";
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:3001/api/v1", // ← ПРАВИЛЬНЫЙ ПРЕФИКС
+  withCredentials: false,
+});
 
 export const authService = {
+  async register(data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }) {
+    return api.post("/auth/email/register", data);
+  },
+
   async login(data: { email: string; password: string }) {
-    const res = await api.post("/v1/auth/email/login", data);
-    return res.data;
+    return api.post("/auth/email/login", data);
   },
 
-  async register(data: { email: string; password: string }) {
-    const res = await api.post("/v1/auth/email/register", data);
-    return res.data;
-  },
-
-  async me() {
-    const res = await api.get("/v1/auth/me");
-    return res.data;
-  },
-
-  isAuthenticated() {
-    return typeof window !== "undefined" &&
-    localStorage.getItem("accessToken")
-      ? true
-      : false;
+  async me(token: string) {
+    return api.get("/auth/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   },
 };

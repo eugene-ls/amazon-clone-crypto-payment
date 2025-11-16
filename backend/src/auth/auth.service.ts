@@ -221,9 +221,7 @@ export class AuthService {
 
     await this.mailService.userSignUp({
       to: dto.email,
-      data: {
-        hash,
-      },
+      data: { hash },
     });
   }
 

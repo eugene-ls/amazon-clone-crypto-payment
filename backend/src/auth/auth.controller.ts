@@ -33,85 +33,64 @@ import { RefreshResponseDto } from './dto/refresh-response.dto';
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
-  @SerializeOptions({
-    groups: ['me'],
-  })
+  @SerializeOptions({ groups: ['me'] })
   @Post('email/login')
-  @ApiOkResponse({
-    type: LoginResponseDto,
-  })
+  @ApiOkResponse({ type: LoginResponseDto })
   @HttpCode(HttpStatus.OK)
   public login(@Body() loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
     return this.service.validateLogin(loginDto);
   }
 
   @Post('email/register')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
-    return this.service.register(createUserDto);
+  @HttpCode(HttpStatus.CREATED)
+  async register(@Body() createUserDto: AuthRegisterLoginDto) {
+    await this.service.register(createUserDto);
+    return { message: 'registered' };
   }
 
   @Post('email/confirm')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async confirmEmail(
-    @Body() confirmEmailDto: AuthConfirmEmailDto,
-  ): Promise<void> {
-    return this.service.confirmEmail(confirmEmailDto.hash);
+  async confirmEmail(@Body() dto: AuthConfirmEmailDto) {
+    return this.service.confirmEmail(dto.hash);
   }
 
   @Post('email/confirm/new')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async confirmNewEmail(
-    @Body() confirmEmailDto: AuthConfirmEmailDto,
-  ): Promise<void> {
-    return this.service.confirmNewEmail(confirmEmailDto.hash);
+  async confirmNewEmail(@Body() dto: AuthConfirmEmailDto) {
+    return this.service.confirmNewEmail(dto.hash);
   }
 
   @Post('forgot/password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async forgotPassword(
-    @Body() forgotPasswordDto: AuthForgotPasswordDto,
-  ): Promise<void> {
-    return this.service.forgotPassword(forgotPasswordDto.email);
+  async forgotPassword(@Body() dto: AuthForgotPasswordDto) {
+    return this.service.forgotPassword(dto.email);
   }
 
   @Post('reset/password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto): Promise<void> {
-    return this.service.resetPassword(
-      resetPasswordDto.hash,
-      resetPasswordDto.password,
-    );
+  resetPassword(@Body() dto: AuthResetPasswordDto) {
+    return this.service.resetPassword(dto.hash, dto.password);
   }
 
   @ApiBearerAuth()
-  @SerializeOptions({
-    groups: ['me'],
-  })
+  @SerializeOptions({ groups: ['me'] })
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
-  @ApiOkResponse({
-    type: User,
-  })
+  @ApiOkResponse({ type: User })
   @HttpCode(HttpStatus.OK)
-  public me(@Request() request): Promise<NullableType<User>> {
-    return this.service.me(request.user);
+  public me(@Request() req) {
+    return this.service.me(req.user);
   }
 
   @ApiBearerAuth()
-  @ApiOkResponse({
-    type: RefreshResponseDto,
-  })
-  @SerializeOptions({
-    groups: ['me'],
-  })
+  @ApiOkResponse({ type: RefreshResponseDto })
   @Post('refresh')
   @UseGuards(AuthGuard('jwt-refresh'))
   @HttpCode(HttpStatus.OK)
-  public refresh(@Request() request): Promise<RefreshResponseDto> {
+  public refresh(@Request() req) {
     return this.service.refreshToken({
-      sessionId: request.user.sessionId,
-      hash: request.user.hash,
+      sessionId: req.user.sessionId,
+      hash: req.user.hash,
     });
   }
 
@@ -119,34 +98,24 @@ export class AuthController {
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async logout(@Request() request): Promise<void> {
-    await this.service.logout({
-      sessionId: request.user.sessionId,
-    });
+  public async logout(@Request() req) {
+    await this.service.logout({ sessionId: req.user.sessionId });
   }
 
   @ApiBearerAuth()
-  @SerializeOptions({
-    groups: ['me'],
-  })
+  @SerializeOptions({ groups: ['me'] })
   @Patch('me')
   @UseGuards(AuthGuard('jwt'))
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    type: User,
-  })
-  public update(
-    @Request() request,
-    @Body() userDto: AuthUpdateDto,
-  ): Promise<NullableType<User>> {
-    return this.service.update(request.user, userDto);
+  @ApiOkResponse({ type: User })
+  public update(@Request() req, @Body() dto: AuthUpdateDto) {
+    return this.service.update(req.user, dto);
   }
 
   @ApiBearerAuth()
   @Delete('me')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async delete(@Request() request): Promise<void> {
-    return this.service.softDelete(request.user);
+  public async delete(@Request() req) {
+    return this.service.softDelete(req.user);
   }
 }

@@ -7,37 +7,30 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const submit = async () => {
-    const res = await authService.login({ email, password });
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    document.cookie = `accessToken=${res.accessToken}; path=/; max-age=604800`;
+    try {
+      const res = await authService.login({ email, password });
 
-    window.location.href = "/admin/products";
+      // если админ — отправляем в /admin
+      if (res.user.role?.id === 1) {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/";
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Login failed");
+    }
   };
 
   return (
-    <div className="p-10 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
-
-      <input
-        className="border p-2 w-full mb-3"
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      />
-
-      <input
-        className="border p-2 w-full mb-3"
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <button
-        onClick={submit}
-        className="w-full bg-blue-600 text-white p-2 rounded"
-      >
-        Login
-      </button>
-    </div>
+    <form onSubmit={handleLogin} style={{ padding: 20 }}>
+      <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+      <button type="submit">Login</button>
+    </form>
   );
 }
