@@ -16,8 +16,14 @@ import { AllConfigType } from './config/config.type';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: true,
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // FIX CORS
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-custom-lang'],
   });
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
@@ -27,9 +33,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix(
     configService.getOrThrow('app.apiPrefix', { infer: true }),
-    {
-      exclude: ['/'],
-    },
+    { exclude: ['/'] },
   );
 
   app.enableVersioning({
@@ -56,9 +60,7 @@ async function bootstrap() {
       in: 'header',
       required: false,
       name: process.env.APP_HEADER_LANGUAGE || 'x-custom-lang',
-      schema: {
-        example: 'en',
-      },
+      schema: { example: 'en' },
     })
     .build();
 

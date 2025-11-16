@@ -1,45 +1,64 @@
 "use client";
 
+import axios from "axios";
 import { useState } from "react";
 import { authService } from "@/lib/services/auth";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
-  const submit = async () => {
-    await authService.register({ email, password });
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
 
-    // авто-логин сразу после регистрации
-    const loginRes = await authService.login({ email, password });
+    const data = {
+      email,
+      password,
+      firstName,
+      lastName,
+    };
 
-    localStorage.setItem("accessToken", loginRes.accessToken);
-    window.location.href = "/admin/products";
+    const res = await axios.post(
+      "http://localhost:3001/api/v1/auth/email/register",
+      data
+    );
+
+    alert("Registered!");
   };
 
   return (
-    <div className="p-10 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Register</h1>
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="First name"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+      />
 
       <input
-        className="border p-2 w-full mb-3"
+        type="text"
+        placeholder="Last name"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+      />
+
+      <input
+        type="email"
         placeholder="Email"
+        value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
 
       <input
-        className="border p-2 w-full mb-3"
         type="password"
         placeholder="Password"
+        value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button
-        onClick={submit}
-        className="w-full bg-blue-600 text-white p-2 rounded"
-      >
-        Register
-      </button>
-    </div>
+      <button type="submit">Register</button>
+    </form>
   );
 }
