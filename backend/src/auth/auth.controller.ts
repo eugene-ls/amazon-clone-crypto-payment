@@ -14,16 +14,12 @@ import {
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
-import { AuthForgotPasswordDto } from './dto/auth-forgot-password.dto';
-import { AuthConfirmEmailDto } from './dto/auth-confirm-email.dto';
-import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { NullableType } from '../utils/types/nullable.type';
 import { User } from '../users/domain/user';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Auth')
 @Controller({
@@ -33,14 +29,16 @@ import { RefreshResponseDto } from './dto/refresh-response.dto';
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
+  // LOGIN
   @SerializeOptions({ groups: ['me'] })
   @Post('email/login')
   @ApiOkResponse({ type: LoginResponseDto })
   @HttpCode(HttpStatus.OK)
-  public login(@Body() loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
+  public login(@Body() loginDto: AuthEmailLoginDto) {
     return this.service.validateLogin(loginDto);
   }
 
+  // REGISTER
   @Post('email/register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() createUserDto: AuthRegisterLoginDto) {
@@ -48,30 +46,10 @@ export class AuthController {
     return { message: 'registered' };
   }
 
-  @Post('email/confirm')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async confirmEmail(@Body() dto: AuthConfirmEmailDto) {
-    return this.service.confirmEmail(dto.hash);
-  }
+  // REMOVE ALL CONFIRM / FORGOT METHODS
+  // (потому что ты их удалил из AuthService)
 
-  @Post('email/confirm/new')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async confirmNewEmail(@Body() dto: AuthConfirmEmailDto) {
-    return this.service.confirmNewEmail(dto.hash);
-  }
-
-  @Post('forgot/password')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async forgotPassword(@Body() dto: AuthForgotPasswordDto) {
-    return this.service.forgotPassword(dto.email);
-  }
-
-  @Post('reset/password')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  resetPassword(@Body() dto: AuthResetPasswordDto) {
-    return this.service.resetPassword(dto.hash, dto.password);
-  }
-
+  // ME
   @ApiBearerAuth()
   @SerializeOptions({ groups: ['me'] })
   @Get('me')
@@ -82,6 +60,7 @@ export class AuthController {
     return this.service.me(req.user);
   }
 
+  // REFRESH TOKEN
   @ApiBearerAuth()
   @ApiOkResponse({ type: RefreshResponseDto })
   @Post('refresh')
@@ -94,6 +73,7 @@ export class AuthController {
     });
   }
 
+  // LOGOUT
   @ApiBearerAuth()
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
@@ -102,6 +82,7 @@ export class AuthController {
     await this.service.logout({ sessionId: req.user.sessionId });
   }
 
+  // UPDATE
   @ApiBearerAuth()
   @SerializeOptions({ groups: ['me'] })
   @Patch('me')
@@ -111,6 +92,7 @@ export class AuthController {
     return this.service.update(req.user, dto);
   }
 
+  // DELETE ACCOUNT
   @ApiBearerAuth()
   @Delete('me')
   @UseGuards(AuthGuard('jwt'))
