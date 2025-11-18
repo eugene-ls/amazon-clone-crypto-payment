@@ -35,37 +35,4 @@ export default function AdminPage() {
       {/* Тут твоя админка */}
     </div>
   );
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Admin Dashboard</h1>
-
-      <p>Welcome, {user.firstName}</p>
-
-      {/* Тут твоя админка */}
-    </div>
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Admin Dashboard</h1>
-
-      <p>Welcome, {user.firstName}</p>
-
-      {/* Тут твоя админка */}
-    </div>
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Admin Dashboard</h1>
-
-      <p>Welcome, {user.firstName}</p>
-
-      {/* Тут твоя админка */}
-      }
-    </div>
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Admin Dashboard</h1>
-
-      <p>Welcome, {user.firstName}</p>
-
-      {/* Тут твоя админка */}
-    </div>
 }
