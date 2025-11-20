@@ -1,13 +1,29 @@
-import { clerkMiddleware } from '@clerk/nextjs/server'
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-// To learn more how to use clerkMiddleware to protect pages in your app, check out https://clerk.com/docs/references/nextjs/clerk-middleware
-export default clerkMiddleware()
+export function middleware(req: NextRequest) {
+  const token = req.cookies.get("token")?.value || req.headers.get("authorization");
+
+  // защищаем только /admin
+  if (req.nextUrl.pathname.startsWith("/admin")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+
+      if (payload.role?.id !== 1) {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+    } catch (e) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
-  ],
-}
+  matcher: ["/admin/:path*"],
+};

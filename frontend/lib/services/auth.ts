@@ -19,6 +19,9 @@ export const authService = {
   async login(data: { email: string; password: string }) {
     const res = await api.post("/auth/email/login", data);
 
+    localStorage.setItem("token", res.data.token);
+    document.cookie = `token=${res.data.token}; path=/;`;
+
     return res.data;
   },
 

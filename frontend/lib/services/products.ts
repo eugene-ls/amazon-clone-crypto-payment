@@ -11,13 +11,21 @@ export const productsService = {
     return res.data;
   },
 
-  async create(data: any) {
-    const res = await api.post("/v1/products", data);
+  async create(formData: FormData) {
+    const res = await api.post("/v1/products", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return res.data;
   },
 
-  async update(id: number, data: any) {
-    const res = await api.patch(`/v1/products/${id}`, data);
+  async update(id: number, formData: FormData) {
+    const res = await api.patch(`/v1/products/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return res.data;
   },
 
