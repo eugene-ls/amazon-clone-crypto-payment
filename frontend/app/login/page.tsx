@@ -15,15 +15,13 @@ export default function LoginPage() {
     try {
       const res = await authService.login({ email, password });
 
-      // сохраняем токен
-      localStorage.setItem("token", res.data.token);
-
-      // проверяем роль
-      if (res.data.user.role?.id === 1) {
+      // ТУТ правильный доступ к данным
+      if (res.user.role?.id === 1) {
         router.push("/admin");
       } else {
         router.push("/");
       }
+
     } catch (err) {
       alert("Login failed");
     }

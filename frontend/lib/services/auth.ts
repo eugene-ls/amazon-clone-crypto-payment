@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "http://localhost:3001/api/v1", // твой backend
-  withCredentials: false,
+  withCredentials: true,
 });
 
 export const authService = {
@@ -20,7 +20,7 @@ export const authService = {
     const res = await api.post("/auth/email/login", data);
 
     localStorage.setItem("token", res.data.token);
-    document.cookie = `token=${res.data.token}; path=/;`;
+    document.cookie = `token=${res.data.token}; path=/; SameSite=Lax`;
 
     return res.data;
   },

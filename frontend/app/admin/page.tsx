@@ -1,38 +1,68 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { authService } from "@/lib/services/auth";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function AdminPage() {
-  const [user, setUser] = useState<any>(null);
-  const [loaded, setLoaded] = useState(false);
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("user");
-    if (saved) {
-      setUser(JSON.parse(saved));
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/login");
+      return;
     }
-    setLoaded(true);
+
+    authService
+      .me(token)
+      .then((user) => {
+        if (user.role?.id === 1) {
+          setIsAdmin(true);
+        } else {
+          router.push("/");
+        }
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  if (!loaded) return <div>Loading...</div>;
+  if (loading) return <p>Loading...</p>;
 
-  // Если нет юзера
-  if (!user) {
-    return <h2>Not authenticated</h2>;
-  }
-
-  // Если роль != admin
-  if (user.role?.id !== 1) {
-    return <h2>Access denied</h2>;
-  }
+  if (!isAdmin) return null;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Admin Dashboard</h1>
+    <div className="p-10 space-y-10">
+      <h1 className="text-4xl font-bold">Admin Panel</h1>
 
-      <p>Welcome, {user.firstName}</p>
+      <div className="grid grid-cols-3 gap-6">
+        <Link
+          href="/admin/products"
+          className="p-6 border rounded-xl shadow hover:bg-gray-50 transition"
+        >
+          <h2 className="text-2xl">📦 Manage Products</h2>
+          <p>View / edit / delete products</p>
+        </Link>
 
-      {/* Тут твоя админка */}
+        <Link
+          href="/admin/products/new"
+          className="p-6 border rounded-xl shadow hover:bg-gray-50 transition"
+        >
+          <h2 className="text-2xl">➕ Add Product</h2>
+          <p>Create new product with images</p>
+        </Link>
+
+        <Link
+          href="/admin/categories"
+          className="p-6 border rounded-xl shadow hover:bg-gray-50 transition"
+        >
+          <h2 className="text-2xl">🗂 Manage Categories</h2>
+          <p>Add / edit categories</p>
+        </Link>
+      </div>
     </div>
   );
 }
