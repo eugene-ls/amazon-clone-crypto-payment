@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3001/api/v1", // ← ПРАВИЛЬНЫЙ ПРЕФИКС
+  baseURL: "http://localhost:3001/api/v1", // твой backend
   withCredentials: false,
 });
 
@@ -12,16 +12,21 @@ export const authService = {
     email: string;
     password: string;
   }) {
-    return api.post("/auth/email/register", data);
+    const res = await api.post("/auth/email/register", data);
+    return res.data; // ВАЖНО!
   },
 
   async login(data: { email: string; password: string }) {
-    return api.post("/auth/email/login", data);
+    const res = await api.post("/auth/email/login", data);
+
+    return res.data;
   },
 
   async me(token: string) {
-    return api.get("/auth/me", {
+    const res = await api.get("/auth/me", {
       headers: { Authorization: `Bearer ${token}` },
     });
+
+    return res.data;
   },
 };
