@@ -1,9 +1,20 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3001/api/v1", // твой backend
+  baseURL: "http://localhost:3001/api/v1",
   withCredentials: true,
 });
+
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export default api;
+
 
 export const authService = {
   async register(data: {
@@ -13,7 +24,7 @@ export const authService = {
     password: string;
   }) {
     const res = await api.post("/auth/email/register", data);
-    return res.data; // ВАЖНО!
+    return res.data;
   },
 
   async login(data: { email: string; password: string }) {
