@@ -123,7 +123,7 @@ export class AuthService {
         lastName: socialData.lastName ?? null,
         socialId: socialData.id,
         provider: authProvider,
-        role: { id: RoleEnum.user },
+        role: { id: 1 },
         status: { id: StatusEnum.active },
       });
 
@@ -171,7 +171,7 @@ export class AuthService {
       firstName: dto.firstName,
       lastName: dto.lastName,
       provider: AuthProvidersEnum.email,
-      role: { id: RoleEnum.user },
+      role: { id: 1 },
       status: { id: StatusEnum.active },
     });
   }

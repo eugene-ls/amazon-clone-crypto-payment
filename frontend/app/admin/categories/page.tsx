@@ -21,9 +21,13 @@ export default function CategoriesPage() {
   const loadCategories = async () => {
     try {
       const data = await categoriesService.getAll();
-      setCategories(data);
-    } catch (err) {
-      console.error(err);
+      setCategories(data || []);
+    } catch (err: any) {
+      console.error("Load categories error:", err);
+      if (err.response?.status !== 401 && err.response?.status !== 403) {
+        alert("Failed to load categories. Please check if backend is running.");
+      }
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -35,13 +39,14 @@ export default function CategoriesPage() {
 
     setSubmitting(true);
     try {
-      await categoriesService.create({ name: formName });
+      await categoriesService.create({ name: formName.trim() });
       setFormName("");
       setShowForm(false);
-      loadCategories();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to create category");
+      await loadCategories();
+    } catch (err: any) {
+      console.error("Create category error:", err);
+      const errorMsg = err.response?.data?.message || err.message || "Failed to create category";
+      alert(errorMsg);
     } finally {
       setSubmitting(false);
     }

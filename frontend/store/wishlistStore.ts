@@ -19,13 +19,25 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
   productIds: new Set(),
   loading: false,
   fetchWishlist: async () => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      set({ count: 0, items: [], productIds: new Set(), loading: false });
+      return;
+    }
+    
     set({ loading: true });
     try {
       const items = await wishlistService.getAll();
       const productIds = new Set(items.map((item: any) => item.product?.id || item.productId));
       set({ items, count: items.length, productIds, loading: false });
-    } catch (err) {
-      set({ count: 0, items: [], productIds: new Set(), loading: false });
+    } catch (err: any) {
+      const status = err.response?.status;
+      if (status === 404 || status === 401 || status === 403) {
+        set({ count: 0, items: [], productIds: new Set(), loading: false });
+      } else {
+        console.error("Wishlist fetch error:", err);
+        set({ count: 0, items: [], productIds: new Set(), loading: false });
+      }
     }
   },
   addToWishlist: async (productId: number) => {

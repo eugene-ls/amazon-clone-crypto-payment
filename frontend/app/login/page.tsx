@@ -24,7 +24,7 @@ export default function LoginPage() {
       const res = await authService.login({ email, password });
       localStorage.setItem("user", JSON.stringify(res.user || res));
       
-      window.location.href = res.user?.role?.id === 1 ? "/admin" : "/";
+      window.location.href = res.user?.role?.id === 2 ? "/admin" : "/";
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed. Please check your credentials.");
     } finally {

@@ -42,16 +42,6 @@ export default function Navbar() {
     };
 
     checkAuth();
-    
-    const interval = setInterval(() => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        fetchCart();
-        fetchWishlist();
-      }
-    }, 3000);
-
-    return () => clearInterval(interval);
   }, [fetchCart, fetchWishlist]);
 
   const handleLogout = () => {
@@ -126,7 +116,7 @@ export default function Navbar() {
             
             {isAuthenticated ? (
               <>
-                {user?.role?.id === 1 && (
+                {user?.role?.id === 2 && (
                   <Link
                     href="/admin"
                     className="hidden md:block text-gray-700 hover:text-black transition-colors"
@@ -196,7 +186,7 @@ export default function Navbar() {
                   <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
                     Profile
                   </Link>
-                  {user?.role?.id === 1 && (
+                  {user?.role?.id === 2 && (
                     <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
                       Admin
                     </Link>

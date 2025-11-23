@@ -17,7 +17,7 @@ export default function AdminPage() {
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    if (user.role?.id !== 1) {
+    if (user.role?.id !== 2) {
       router.push("/");
     }
   }, [router]);

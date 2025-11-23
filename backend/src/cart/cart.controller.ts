@@ -9,7 +9,10 @@ import {
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 
-@Controller('cart')
+@Controller({
+  path: 'cart',
+  version: '1',
+})
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
